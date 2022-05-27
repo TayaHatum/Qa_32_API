@@ -3,6 +3,7 @@ package contacttests;
 import com.google.gson.Gson;
 import dto.AuthRequestDto;
 import dto.AuthResponseDto;
+import dto.ErrorDto;
 import okhttp3.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,5 +37,27 @@ public class LoginTestsOkhttp {
 
         Assert.assertEquals(response.code(),200);
         Assert.assertTrue(response.isSuccessful());
+    }
+
+
+    @Test
+    public void loginWrongEmail() throws IOException {
+        AuthRequestDto requestDto = AuthRequestDto.builder().email("noagmail.com").password("Nnoa12345$").build();
+        RequestBody requestBody = RequestBody.create(gson.toJson(requestDto),JSON);
+
+        Request request = new Request.Builder()
+                .url("https://contacts-telran.herokuapp.com/api/login")
+                .post(requestBody)
+                .build();
+
+        Response response = client.newCall(request).execute();
+
+        ErrorDto errorDto = gson.fromJson(response.body().string(),ErrorDto.class);
+        String message = errorDto.getMessage();
+        Assert.assertEquals(message,"Wrong email format! Example: name@mail.com");
+
+
+        Assert.assertEquals(response.code(),400);
+        Assert.assertFalse(response.isSuccessful());
     }
 }
