@@ -55,6 +55,7 @@ public class LoginTestsOkhttp {
         ErrorDto errorDto = gson.fromJson(response.body().string(),ErrorDto.class);
         String message = errorDto.getMessage();
         Assert.assertEquals(message,"Wrong email format! Example: name@mail.com");
+        Assert.assertTrue(message.contains("Wrong email format"));
 
 
         Assert.assertEquals(response.code(),400);
